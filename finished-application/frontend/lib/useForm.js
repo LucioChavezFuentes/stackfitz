@@ -2,14 +2,17 @@ import { useEffect, useState } from 'react';
 
 export default function useForm(initial = {}) {
   // create a state object for our inputs
+  //const initialString = JSON.stringify(initial);
+  console.log({...initial, buena: 'buenas'});
   const [inputs, setInputs] = useState(initial);
-  const initialValues = Object.values(initial).join('');
 
-  useEffect(() => {
+  console.log(inputs);
+  // const initialValues = Object.values(initial).join('');
+  /*useEffect(() => {
     // This function runs when the things we are watching change
-    setInputs(initial);
-  }, [initialValues]);
-
+    setInputs((prevInput) => ({ ...prevInput, ...initial }));
+  }, [initialString]);
+*/
   // {
   //   name: 'wes',
   //   description: 'nice shoes',
@@ -17,18 +20,31 @@ export default function useForm(initial = {}) {
   // }
 
   function handleChange(e) {
-    let { value, name, type } = e.target;
-    if (type === 'number') {
+    const { value, name, type } = e.target;
+    let newValue;
+
+    switch (type) {
+      case 'number':
+        newValue = parseInt(value);
+        break;
+      case 'file':
+        [newValue] = e.target.files;
+        break;
+      default:
+        newValue = value;
+        break;
+    }
+    /* if (type === 'number') {
       value = parseInt(value);
     }
     if (type === 'file') {
       [value] = e.target.files;
-    }
-    setInputs({
+    } */
+    setInputs((prevInput) => ({
       // copy the existing state
-      ...inputs,
-      [name]: value,
-    });
+      ...prevInput,
+      [name]: newValue,
+    }));
   }
 
   function resetForm() {
